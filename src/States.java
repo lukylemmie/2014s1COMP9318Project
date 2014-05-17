@@ -11,13 +11,13 @@ import java.util.Scanner;
  * Time: 8:01 PM
  * To change this template use File | Settings | File Templates.
  */
-public class State {
+public class States {
     private Integer numStates;
     private ArrayList<String> stateNames = new ArrayList<String>();
     private Integer[][] transitions;
 
 
-    public State(String fileName){
+    public States(String fileName){
         Scanner scanner;
         File file = new File(fileName);
         int i,j,k;
