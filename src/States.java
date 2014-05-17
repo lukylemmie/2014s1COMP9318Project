@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
@@ -45,4 +46,12 @@ public class States {
         }
     }
 
+    @Override
+    public String toString() {
+        return "States{" +
+                "numStates=" + numStates +
+                ", stateNames=" + stateNames +
+                ", transitions=" + Arrays.toString(transitions) +
+                '}';
+    }
 }
