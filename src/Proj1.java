@@ -5,7 +5,7 @@
  * Time: 9:37 PM
  * To change this template use File | Settings | File Templates.
  */
-public class Main {
+public class Proj1 {
 
     public static void main(String[] args){
 
