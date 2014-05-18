@@ -37,7 +37,6 @@ public class States {
                 j = scanner.nextInt();
                 k = scanner.nextInt();
                 transitions[i][j] = k;
-                transitions[j][i] = k;
             }
 
         } catch (FileNotFoundException e) {

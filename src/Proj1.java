@@ -6,6 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 public class Proj1 {
+    static final Double EPSILON = 1.0E-4;
 
     public static void main(String[] args){
 
