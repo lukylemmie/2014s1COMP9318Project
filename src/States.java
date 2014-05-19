@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -17,7 +18,7 @@ public class States {
     private Logger logger = Logger.getLogger(States.class.getName());
     private Integer numStates;
     private ArrayList<String> stateNames = new ArrayList<String>();
-    private Integer[][] transitions;
+    private HashMap<Integer,HashMap<Integer,Integer>> transitions = new HashMap<Integer, HashMap<Integer, Integer>>();
 
 
     public States(String fileName){
@@ -25,7 +26,7 @@ public class States {
         Scanner scanner;
         File file = new File(fileName);
         int i,j,k;
-
+        HashMap<Integer, Integer> map;
 
         try {
             scanner = new Scanner(file);
@@ -33,18 +34,27 @@ public class States {
             numStates = scanner.nextInt();
             scanner.nextLine();
             logger.info("2:" + toString());
-            transitions = new Integer[numStates][numStates];
 
             for(i = 0; i < numStates; i++){
                 stateNames.add(scanner.nextLine());
             }
             logger.info("3:" + toString());
 
-            while(scanner.hasNextInt()){
+            while(scanner.hasNextLine()){
                 i = scanner.nextInt();
                 j = scanner.nextInt();
                 k = scanner.nextInt();
-                transitions[i][j] = k;
+                if(transitions.containsKey(i)){
+                    map = transitions.get(i);
+                    if(map.containsKey(j)){
+                        logger.info("Duplicate transition?");
+                    }
+                    map.put(j,k);
+                } else {
+                    map = new HashMap<Integer, Integer>();
+                    transitions.put(i, map);
+                    map.put(j,k);
+                }
             }
             logger.info("4:" + toString());
 
@@ -59,19 +69,28 @@ public class States {
         return "States{" +
                 "numStates=" + numStates +
                 ", stateNames=" + stateNames +
-                ", transitions=" + transitionsData() +
+                ", transitions=" + transitions +
                 '}';
     }
 
-    private String transitionsData(){
-        String data = "";
-
-        if(transitions != null){
-            for(Integer[] iArray : transitions){
-                data = "{" + Arrays.toString(iArray) + "}";
-            }
-        }
-
-        return data;
-    }
+    //    @Override
+//    public String toString() {
+//        return "States{" +
+//                "numStates=" + numStates +
+//                ", stateNames=" + stateNames +
+//                ", transitions=" + transitionsData() +
+//                '}';
+//    }
+//
+//    private String transitionsData(){
+//        String data = "\n";
+//
+//        if(transitions != null){
+//            for(int[] iArray : transitions){
+//                data += "{" + Arrays.toString(iArray) + "}\n";
+//            }
+//        }
+//
+//        return data;
+//    }
 }

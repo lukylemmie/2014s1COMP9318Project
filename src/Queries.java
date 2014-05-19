@@ -19,9 +19,7 @@ public class Queries {
     public Queries(String fileName){
         logger.setLevel(Proj1.LOGGING_LEVEL);
         Scanner scanner;
-        Scanner lineScanner;
         File file = new File(fileName);
-        String line;
         ArrayList<String> tokenList;
 
         try {
@@ -29,8 +27,8 @@ public class Queries {
             logger.info("1:" + toString());
 
             while(scanner.hasNextLine()){
-                line = scanner.nextLine();
-                lineScanner = new Scanner(line);
+                String line = scanner.nextLine();
+                Scanner lineScanner = new Scanner(line);
                 tokenList = new ArrayList<String>();
                 while(lineScanner.hasNext()){
                     tokenList.add(lineScanner.next());
