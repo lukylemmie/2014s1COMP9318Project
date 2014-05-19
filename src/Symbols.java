@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -17,7 +16,7 @@ public class Symbols {
     private Logger logger = Logger.getLogger(Symbols.class.getName());
     private Integer numSymbols;
     private ArrayList<String> symbolNames = new ArrayList<String>();
-    private HashMap<String,Integer> symbolNumber = new HashMap<String, Integer>();
+    private HashMap<String,Integer> symbolIDs = new HashMap<String, Integer>();
     private HashMap<Integer,HashMap<Integer,Integer>> emissions = new HashMap<Integer, HashMap<Integer, Integer>>();
 
     public Symbols(String fileName){
@@ -39,7 +38,7 @@ public class Symbols {
             for(i = 0; i < numSymbols; i++){
                 symbol = scanner.nextLine();
                 symbolNames.add(symbol);
-                symbolNumber.put(symbol, new Integer(count));
+                symbolIDs.put(symbol, new Integer(count));
                 count++;
             }
             logger.info("3:" + toString());

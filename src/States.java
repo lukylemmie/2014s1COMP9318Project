@@ -1,8 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -18,7 +16,7 @@ public class States {
     private Logger logger = Logger.getLogger(States.class.getName());
     private Integer numStates;
     private ArrayList<String> stateNames = new ArrayList<String>();
-    private HashMap<String, Integer> stateNum = new HashMap<String, Integer>();
+    private HashMap<String, Integer> stateIDs = new HashMap<String, Integer>();
     private HashMap<Integer,HashMap<Integer,Integer>> transitions = new HashMap<Integer, HashMap<Integer, Integer>>();
 
     public States(String fileName){
@@ -40,7 +38,7 @@ public class States {
             for(i = 0; i < numStates; i++){
                 state = scanner.nextLine();
                 stateNames.add(state);
-                stateNum.put(state, new Integer(count));
+                stateIDs.put(state, new Integer(count));
                 count++;
             }
             logger.info("3:" + toString());
