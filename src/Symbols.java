@@ -17,6 +17,7 @@ public class Symbols {
     private Logger logger = Logger.getLogger(Symbols.class.getName());
     private Integer numSymbols;
     private ArrayList<String> symbolNames = new ArrayList<String>();
+    private HashMap<String,Integer> symbolNumber = new HashMap<String, Integer>();
     private HashMap<Integer,HashMap<Integer,Integer>> emissions = new HashMap<Integer, HashMap<Integer, Integer>>();
 
     public Symbols(String fileName){
@@ -25,6 +26,8 @@ public class Symbols {
         File file = new File(fileName);
         int i,j,k;
         HashMap<Integer, Integer> map;
+        int count = 0;
+        String symbol;
 
         try {
             scanner = new Scanner(file);
@@ -34,7 +37,10 @@ public class Symbols {
             logger.info("2:" + toString());
 
             for(i = 0; i < numSymbols; i++){
-                symbolNames.add(scanner.nextLine());
+                symbol = scanner.nextLine();
+                symbolNames.add(symbol);
+                symbolNumber.put(symbol, new Integer(count));
+                count++;
             }
             logger.info("3:" + toString());
 

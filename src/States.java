@@ -18,8 +18,8 @@ public class States {
     private Logger logger = Logger.getLogger(States.class.getName());
     private Integer numStates;
     private ArrayList<String> stateNames = new ArrayList<String>();
+    private HashMap<String, Integer> stateNum = new HashMap<String, Integer>();
     private HashMap<Integer,HashMap<Integer,Integer>> transitions = new HashMap<Integer, HashMap<Integer, Integer>>();
-
 
     public States(String fileName){
         logger.setLevel(Proj1.LOGGING_LEVEL);
@@ -27,6 +27,8 @@ public class States {
         File file = new File(fileName);
         int i,j,k;
         HashMap<Integer, Integer> map;
+        int count = 0;
+        String state;
 
         try {
             scanner = new Scanner(file);
@@ -36,7 +38,10 @@ public class States {
             logger.info("2:" + toString());
 
             for(i = 0; i < numStates; i++){
-                stateNames.add(scanner.nextLine());
+                state = scanner.nextLine();
+                stateNames.add(state);
+                stateNum.put(state, new Integer(count));
+                count++;
             }
             logger.info("3:" + toString());
 
