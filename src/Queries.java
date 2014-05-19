@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,9 +13,11 @@ import java.util.Scanner;
  * To change this template use File | Settings | File Templates.
  */
 public class Queries {
+    private Logger logger = Logger.getLogger(Queries.class.getName());
     private ArrayList<ArrayList<String>> tokens = new ArrayList<ArrayList<String>>();
 
     public Queries(String fileName){
+        logger.setLevel(Proj1.LOGGING_LEVEL);
         Scanner scanner;
         Scanner lineScanner;
         File file = new File(fileName);
@@ -23,6 +26,7 @@ public class Queries {
 
         try {
             scanner = new Scanner(file);
+            logger.info("1:" + toString());
 
             while(scanner.hasNextLine()){
                 line = scanner.nextLine();
@@ -33,6 +37,7 @@ public class Queries {
                 }
                 tokens.add(tokenList);
             }
+            logger.info("2:" + toString());
 
         } catch (FileNotFoundException e) {
             System.out.println("Query file not found...");
