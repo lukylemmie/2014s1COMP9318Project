@@ -67,6 +67,14 @@ public class Symbols {
         }
     }
 
+    public Integer getSymbolID(String symbol){
+        Integer symbolID = symbolIDs.get(symbol);
+        if(symbolID == null){
+            symbolID = Proj1.UNKNOWN;
+        }
+        return symbolID;
+    }
+
     @Override
     public String toString() {
         return "Symbols{" +

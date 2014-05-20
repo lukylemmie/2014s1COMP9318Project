@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class Queries {
     private Logger logger = Logger.getLogger(Queries.class.getName());
     private ArrayList<ArrayList<String>> tokens = new ArrayList<ArrayList<String>>();
+    private ArrayList<ArrayList<Integer>> tokenIDs = new ArrayList<ArrayList<Integer>>();
 
     public Queries(String fileName){
         logger.setLevel(Proj1.LOGGING_LEVEL);
@@ -40,6 +41,15 @@ public class Queries {
         } catch (FileNotFoundException e) {
             System.out.println("Query file not found...");
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    public void convert2IDs(Symbols symbols){
+        for(ArrayList<String> tokenList : tokens){
+            ArrayList<Integer> tokenIDList = new ArrayList<Integer>();
+            for(String token : tokenList){
+                tokenIDList.add(symbols.getSymbolID(token));
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import java.util.logging.Level;
 public class Proj1 {
     public static final Level LOGGING_LEVEL = Level.ALL;
     static final Double EPSILON = 1.0E-4;
+    static final Integer UNKNOWN = -1;
 
     public static void main(String[] args){
         System.out.println("args=" + Arrays.toString(args));
