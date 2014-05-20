@@ -37,15 +37,11 @@ public class Proj1 {
         ArrayList<ArrayList<Integer>> tokenIDs = queries.getTokenIDs();
 
         for(ArrayList<Integer> address : tokenIDs){
-            HashMap<Integer, SAP[]> table = new HashMap<Integer, SAP[]>();
-            HashMap<Integer, SAP[]> table2;
+            HashMap<Integer, SAP> table = new HashMap<Integer, SAP>();
+            HashMap<Integer, SAP> table2;
             for(int i = 0; i < states.getNumStates(); i++){
-                SAP[] startings = new SAP[k];
-                for(int j = 0; j < k; j++) {
-                    SAP starting = new SAP(states);
-                    startings[j] = starting;
-                }
-                table.put(i, startings);
+                SAP starting = new SAP(states);
+                table.put(i, starting);
             }
             if(address.equals(tokenIDs.get(0))) {
                 for (int i = 0; i < states.getNumStates(); i++) {
@@ -54,21 +50,17 @@ public class Proj1 {
                 System.out.println("#############################################################");
             }
             for(Integer token : address){
-                table2 = new HashMap<Integer, SAP[]>();
+                table2 = new HashMap<Integer, SAP>();
                 for(int i = 0; i < states.getNumStates(); i++){
-                    SAP[] bestChance = new SAP[k];
+                    SAP bestChance = null;
                     for(int j = 0; j < states.getNumStates(); j++){
                         SAP current = new SAP(table.get(j));
                         current.addState(i, token, states, symbols);
-                        int a = 0;
-                        boolean notFound = false;
-                        while(a < k && !notFound) {
-                            if (bestChance == null) {
+                        if (bestChance == null) {
+                            bestChance = current;
+                        } else {
+                            if (current.getLnProbability() > bestChance.getLnProbability()) {
                                 bestChance = current;
-                            } else {
-                                if (current.getLnProbability() > bestChance.getLnProbability()) {
-                                    bestChance = current;
-                                }
                             }
                         }
                     }
