@@ -13,11 +13,12 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class States {
-    private Logger logger = Logger.getLogger(States.class.getName());
+    private final Logger logger = Logger.getLogger(States.class.getName());
     private Integer numStates;
-    private ArrayList<String> stateNames = new ArrayList<String>();
-    private HashMap<String, Integer> stateIDs = new HashMap<String, Integer>();
-    private HashMap<Integer,HashMap<Integer,Integer>> transitions = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private final ArrayList<String> stateNames = new ArrayList<String>();
+    private final HashMap<String, Integer> stateIDs = new HashMap<String, Integer>();
+    private final HashMap<Integer, HashMap<Integer,Integer>> transitions = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private final HashMap<Integer, Integer> transitionsCount = new HashMap<Integer, Integer>();
 
     public States(String fileName){
         logger.setLevel(Proj1.LOGGING_LEVEL);
@@ -27,6 +28,7 @@ public class States {
         HashMap<Integer, Integer> map;
         int count = 0;
         String state;
+        Integer tCount;
 
         try {
             scanner = new Scanner(file);
@@ -38,7 +40,7 @@ public class States {
             for(i = 0; i < numStates; i++){
                 state = scanner.nextLine();
                 stateNames.add(state);
-                stateIDs.put(state, new Integer(count));
+                stateIDs.put(state, count);
                 count++;
             }
             logger.info("3:" + toString());
@@ -58,6 +60,13 @@ public class States {
                     transitions.put(i, map);
                     map.put(j,k);
                 }
+                if(transitionsCount.containsKey(i)){
+                    tCount = transitionsCount.get(i);
+                    tCount += k;
+                    transitionsCount.put(i, tCount);
+                } else {
+                    transitionsCount.put(i,k);
+                }
             }
             logger.info("4:" + toString());
 
@@ -65,6 +74,37 @@ public class States {
             System.out.println("State file not found...");
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    // returns the natural log of the probability of state1 transitioning to state2 after add-1 smoothing
+    public Double lnProbability(Integer state1, Integer state2){
+        Double chance = 0d;
+        Double lnChance;
+
+        logger.info("BEGIN = " + getStateID("BEGIN"));
+        logger.info("END = " + getStateID("END"));
+        logger.info("state2 = " + state2);
+        if(!(state2.equals(getStateID("BEGIN")) || state1.equals(getStateID("END")))){
+            logger.info("If statement was true");
+            if(transitions.containsKey(state1) && transitions.get(state1).containsKey(state2)){
+                chance = (transitions.get(state1).get(state2) + 1d) / (transitionsCount.get(state1) + numStates - 1);
+            } else if(transitionsCount.containsKey(state1)) {
+                chance = 1d / (transitionsCount.get(state1) + numStates - 1);
+            } else {
+                chance = 1d / (numStates - 1);
+            }
+        }
+        lnChance = Math.log(chance);
+        logger.info("lnChance = " + lnChance);
+        return lnChance;
+    }
+
+    public Integer getStateID(String state){
+        Integer stateID = stateIDs.get(state);
+        if(stateID == null){
+            stateID = Proj1.UNKNOWN;
+        }
+        return stateID;
     }
 
     @Override
@@ -76,24 +116,7 @@ public class States {
                 '}';
     }
 
-    //    @Override
-//    public String toString() {
-//        return "States{" +
-//                "numStates=" + numStates +
-//                ", stateNames=" + stateNames +
-//                ", transitions=" + transitionsData() +
-//                '}';
-//    }
-//
-//    private String transitionsData(){
-//        String data = "\n";
-//
-//        if(transitions != null){
-//            for(int[] iArray : transitions){
-//                data += "{" + Arrays.toString(iArray) + "}\n";
-//            }
-//        }
-//
-//        return data;
-//    }
+    public Integer getNumStates() {
+        return numStates;
+    }
 }

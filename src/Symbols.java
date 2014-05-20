@@ -13,11 +13,12 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class Symbols {
-    private Logger logger = Logger.getLogger(Symbols.class.getName());
+    private final Logger logger = Logger.getLogger(Symbols.class.getName());
     private Integer numSymbols;
-    private ArrayList<String> symbolNames = new ArrayList<String>();
-    private HashMap<String,Integer> symbolIDs = new HashMap<String, Integer>();
-    private HashMap<Integer,HashMap<Integer,Integer>> emissions = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private final ArrayList<String> symbolNames = new ArrayList<String>();
+    private final HashMap<String,Integer> symbolIDs = new HashMap<String, Integer>();
+    private final HashMap<Integer,HashMap<Integer,Integer>> emissions = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private final HashMap<Integer, Integer> emissionsCount = new HashMap<Integer, Integer>();
 
     public Symbols(String fileName){
         logger.setLevel(Proj1.LOGGING_LEVEL);
@@ -27,6 +28,7 @@ public class Symbols {
         HashMap<Integer, Integer> map;
         int count = 0;
         String symbol;
+        Integer eCount;
 
         try {
             scanner = new Scanner(file);
@@ -38,7 +40,7 @@ public class Symbols {
             for(i = 0; i < numSymbols; i++){
                 symbol = scanner.nextLine();
                 symbolNames.add(symbol);
-                symbolIDs.put(symbol, new Integer(count));
+                symbolIDs.put(symbol, count);
                 count++;
             }
             logger.info("3:" + toString());
@@ -58,6 +60,13 @@ public class Symbols {
                     emissions.put(i, map);
                     map.put(j,k);
                 }
+                if(emissionsCount.containsKey(i)){
+                    eCount = emissionsCount.get(i);
+                    eCount += k;
+                    emissionsCount.put(i, eCount);
+                } else {
+                    emissionsCount.put(i,k);
+                }
             }
             logger.info("4:" + toString());
 
@@ -65,6 +74,26 @@ public class Symbols {
             System.out.println("Symbol file not found...");
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
+    }
+
+    // returns the natural log of the probability of state emitting symbol after add-1 smoothing
+    public Double lnProbability(Integer state, Integer symbol, States states){
+        Double chance = 0d;
+        Double lnChance;
+
+        if(!(state.equals(states.getStateID("BEGIN")) || state.equals(states.getStateID("END")))){
+            if(emissions.containsKey(state) && emissions.get(state).containsKey(symbol)){
+                chance = (emissions.get(state).get(symbol) + 1d) / (emissionsCount.get(state) + numSymbols + 1);
+            } else if (emissionsCount.containsKey(state)) {
+                chance = 1d / (emissionsCount.get(state) + numSymbols + 1);
+            } else {
+                chance = 1d / (numSymbols + 1);
+            }
+        }
+        lnChance = Math.log(chance);
+        logger.info("lnChance = " + lnChance);
+
+        return lnChance;
     }
 
     public Integer getSymbolID(String symbol){
@@ -84,17 +113,7 @@ public class Symbols {
                 '}';
     }
 
-
-
-//    private String emissionsData(){
-//        String data = "\n";
-//
-//        if(emissions != null){
-//            for(int[] iArray : emissions){
-//                data += "{" + Arrays.toString(iArray) + "}\n";
-//            }
-//        }
-//
-//        return data;
-//    }
+    public Integer getNumSymbols() {
+        return numSymbols;
+    }
 }

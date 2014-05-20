@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -13,9 +12,9 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class Queries {
-    private Logger logger = Logger.getLogger(Queries.class.getName());
-    private ArrayList<ArrayList<String>> tokens = new ArrayList<ArrayList<String>>();
-    private ArrayList<ArrayList<Integer>> tokenIDs = new ArrayList<ArrayList<Integer>>();
+    private final Logger logger = Logger.getLogger(Queries.class.getName());
+    private final ArrayList<ArrayList<String>> tokens = new ArrayList<ArrayList<String>>();
+    private final ArrayList<ArrayList<Integer>> tokenIDs = new ArrayList<ArrayList<Integer>>();
 
     public Queries(String fileName){
         logger.setLevel(Proj1.LOGGING_LEVEL);
@@ -50,13 +49,20 @@ public class Queries {
             for(String token : tokenList){
                 tokenIDList.add(symbols.getSymbolID(token));
             }
+            tokenIDs.add(tokenIDList);
         }
+        logger.info(toString());
+    }
+
+    public ArrayList<ArrayList<Integer>> getTokenIDs() {
+        return tokenIDs;
     }
 
     @Override
     public String toString() {
         return "Queries{" +
                 "tokens=" + tokens +
+                ", tokenIDs=" + tokenIDs +
                 '}';
     }
 }
