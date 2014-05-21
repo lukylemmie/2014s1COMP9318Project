@@ -1,6 +1,4 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -21,6 +19,7 @@ public class SAP {
         lnProbability = 0d;
     }
 
+    // adds a state with the current token and updates the lnProbability
     public void addState(Integer stateID, Integer tokenID, States states, Symbols symbols){
         sequence.add(stateID);
         Double lnTransitionChance = states.lnProbability(lastState, stateID);
@@ -59,5 +58,14 @@ public class SAP {
         output += " " + lnProbability;
 
         System.out.println(output + " lastState = " + lastState);
+    }
+
+    @Override
+    public String toString() {
+        return "SAP{" +
+                "sequence=" + sequence +
+                ", lnProbability=" + lnProbability +
+                ", lastState=" + lastState +
+                '}';
     }
 }
