@@ -7,16 +7,28 @@ import java.util.logging.Logger;
  */
 public class SAP {
     private final Logger logger = Logger.getLogger(SAP.class.getName());
-    private ArrayList<Integer> sequence = new ArrayList<Integer>();
+    private ArrayList<Integer> sequence;
     private Double lnProbability;
     private Integer lastState;
 
     public SAP(States states){
         logger.setLevel(Proj1.LOGGING_LEVEL);
+        sequence = new ArrayList<Integer>();
         Integer startID = states.getStateID("BEGIN");
         sequence.add(startID);
         lastState = startID;
         lnProbability = 0d;
+    }
+
+    public SAP(ArrayList<Integer> sequence, Double lnProbability){
+        this.sequence = sequence;
+        this.lnProbability = lnProbability;
+    }
+
+    public SAP(SAP base){
+        this.sequence = new ArrayList<Integer>(base.sequence);
+        this.lnProbability = base.lnProbability;
+        this.lastState = base.lastState;
     }
 
     // adds a state with the current token and updates the lnProbability
@@ -44,12 +56,6 @@ public class SAP {
         lastState = endID;
     }
 
-    public SAP(SAP base){
-        this.sequence = new ArrayList<Integer>(base.sequence);
-        this.lnProbability = base.lnProbability;
-        this.lastState = base.lastState;
-    }
-
     public void print(){
         String output = sequence.toString();
         output = output.replace("[","");
@@ -57,7 +63,7 @@ public class SAP {
         output = output.replace(" ","");
         output += " " + lnProbability;
 
-        System.out.println(output + " lastState = " + lastState);
+        System.out.println(output);
     }
 
     @Override

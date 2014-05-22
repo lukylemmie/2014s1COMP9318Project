@@ -39,196 +39,150 @@ public class Proj1 {
 
         int i = 0;
         for(ArrayList<Integer> address : addresses){
-            System.out.println("i = " + i);
+//            System.out.println("i = " + i + " : " + address);
+//            if(i == 0){
+//                logger.setLevel(Level.ALL);
+//            } else {
+//                logger.setLevel(Level.OFF);
+//            }
             i++;
             SAP current = new SAP(states);
-            ArrayList<SAP> extraK = getTopK(address, current, states, symbols, k);
-            MySAPList topK = new MySAPList(k);
-            topK.addAll(extraK);
-            for(SAP sap : topK.getTopKList()){
+            ArrayList<SAP> topK = getTopK(address, current, k);
+            for(SAP sap : topK){
                 sap.print();
             }
         }
     }
 
-//            HashMap<Integer, SAP> table = new HashMap<Integer, SAP>();
-//            HashMap<Integer, SAP> table2;
-//            for(int i = 0; i < states.getNumStates(); i++){
-//                SAP starting = new SAP(states);
-//                table.put(i, starting);
-//            }
-//            if(address.equals(addresses.get(0))) {
-//                for (int i = 0; i < states.getNumStates(); i++) {
-//                    table.get(i).print();
-//                }
-//                System.out.println("#############################################################");
-//            }
-//            for(Integer token : address){
-//                table2 = new HashMap<Integer, SAP>();
-//                for(int i = 0; i < states.getNumStates(); i++){
-//                    SAP bestChance = null;
-//                    for(int j = 0; j < states.getNumStates(); j++){
-//                        SAP current = new SAP(table.get(j));
-//                        current.addState(i, token, states, symbols);
-//                        if (bestChance == null) {
-//                            bestChance = current;
-//                        } else {
-//                            if (current.getLnProbability() > bestChance.getLnProbability()) {
-//                                bestChance = current;
-//                            }
-//                        }
-//                    }
-//                    table2.put(i, bestChance);
-//                }
-//                table = table2;
-//                if(address.equals(addresses.get(0))) {
-//                    for (int i = 0; i < states.getNumStates(); i++) {
-//                        table.get(i).print();
-//                    }
-//                    System.out.println("#############################################################");
-//                }
-//            }
-//            for(int i = 0; i < states.getNumStates(); i++){
-//                table.get(i).closeSAP(states);
-//            }
-//            if(address.equals(addresses.get(0))) {
-//                for (int i = 0; i < states.getNumStates(); i++) {
-//                    table.get(i).print();
-//                }
-//            }
 
-
-    private ArrayList<SAP> getTopK(ArrayList<Integer> address, SAP currentSAP, States states, Symbols symbols, Integer k){
-        return BFStopK(address, 0, currentSAP, states, symbols, k).getTopKList();
+    private ArrayList<SAP> getTopK(ArrayList<Integer> address, SAP currentSAP, Integer k){
+        return useArrays(address, k);
     }
 
-    //TODO: incomplete
-    private MySAPList CheckPrevious(ArrayList<Integer> address, States states, Symbols symbols, Integer k){
-        MySAPList topK = new MySAPList(k);
-        ArrayList<ArrayList<SAP>> SAPs = new ArrayList<ArrayList<SAP>>();
-        ArrayList<SAP> SAPsI = new ArrayList<SAP>();
-        ArrayList<SAP> SAPsI2;
 
-        for(int i = 0; i < states.getNumStates(); i++){
-            SAPsI.add(new SAP(states));
-        }
-        SAPs.add(SAPsI);
+    private ArrayList<SAP> useArrays(ArrayList<Integer> address, Integer k){
+        ArrayList<SAP> topK = new ArrayList<SAP>();
+        ArrayList<Integer> topProb = new ArrayList<Integer>();
+        Double lnProbabilities[][][] = new Double[k][states.getNumStates()][address.size() + 3];
+        Integer previousStates[][][] = new Integer[k][states.getNumStates()][address.size() + 3];
 
-        for(int i = 0; i < address.size(); i++){
-            SAPsI = new ArrayList<SAP>();
-            SAPsI2 = SAPs.get(i);
 
-            for(int j = 0; j < states.getNumStates(); j++){
-
-            }
-
-            SAPs.add(SAPsI);
+        for(int i = 0; i < states.getNumStates(); i++) {
+            lnProbabilities[0][i][0] = 0d;
+            previousStates[0][i][0] = i;
         }
 
-        topK.addAll(SAPs.get(SAPs.size() - 1));
+        for(int j = 0; j < address.size(); j++) {
+            for (int i = 0; i < states.getNumStates(); i++) {
+                for (int h = 0; h < states.getNumStates(); h++) {
+                    Double lnTransitionChance = states.lnProbability(h, i);
+                    Double lnEmissionChance = symbols.lnProbability(i, address.get(j), states);
+                    Double lnProbability = lnTransitionChance + lnEmissionChance + lnProbabilities[0][h][j];
+                    if (lnProbabilities[0][i][j + 1] == null) {
+                        lnProbabilities[0][i][j + 1] = lnProbability;
+                        previousStates[0][i][j + 1] = h;
+                    } else if (lnProbabilities[0][i][j + 1] < lnProbability) {
+                        lnProbabilities[0][i][j + 1] = lnProbability;
+                        previousStates[0][i][j + 1] = h;
 
-        return topK;
-    }
-
-    private MySAPList BFStopK(ArrayList<Integer> address, int tokenIndex, SAP currentSAP, States states, Symbols symbols, Integer k){
-        MySAPList topK = new MySAPList(k);
-        MySAPList nextTopK;
-        Integer token = address.get(tokenIndex);
-        for(int i = 0; i < states.getNumStates(); i++){
-            SAP current = new SAP(currentSAP);
-            current.addState(i, token, states, symbols);
-            topK.add(current);
-        }
-        logger.info(address.toString() + " -- " + tokenIndex);
-        if(tokenIndex + 1 < address.size()) {
-            nextTopK = new MySAPList(k);
-            ArrayList<SAP> saps = topK.getTopKList();
-            for(SAP sap : saps){
-                nextTopK.addAll(BFStopK(address, tokenIndex + 1, sap, states, symbols, k));
-            }
-            topK = nextTopK;
-        } else {
-            ArrayList<SAP> saps = topK.getTopKList();
-            for(SAP sap : saps){
-                sap.closeSAP(states);
-            }
-        }
-
-        return topK;
-    }
-
-    private MySAPList DFStopK(ArrayList<Integer> address, SAP currentSAP, States states, Symbols symbols, Integer k){
-        logger.info(address.toString());
-        MySAPList topK = new MySAPList(k);
-        Integer token = address.remove(0);
-        logger.info(address.toString());
-
-        for(int i = 0; i < states.getNumStates(); i++){
-            ArrayList<Integer> copyAddress = new ArrayList<Integer>();
-            logger.info(i + " : " + address.toString());
-            for(Integer j : address){
-                copyAddress.add(j);
-            }
-            SAP current = new SAP(currentSAP);
-            current.addState(i, token, states, symbols);
-            if(!copyAddress.isEmpty()){
-                topK.addAll(DFStopK(copyAddress, current, states, symbols, k));
-            } else {
-                current.closeSAP(states);
-                topK.add(current);
-            }
-            logger.info(i + " : " + topK.getTopKList());
-        }
-
-        return topK;
-    }
-
-    private class MySAPList{
-        private final Logger logger = Logger.getLogger(MySAPList.class.getName());
-        ArrayList<SAP> topKList;
-        Integer k;
-
-        private MySAPList(Integer k){
-            logger.setLevel(Proj1.LOGGING_LEVEL);
-            logger.setLevel(Level.ALL);
-            topKList = new ArrayList<SAP>();
-            this.k = k;
-        }
-
-        private void add(SAP sap){
-            if (topKList.size() < k) {
-                topKList.add(sap);
-            } else {
-                if(sap.getLnProbability() > topKList.get(k-1).getLnProbability()) {
-                    boolean added = false;
-                    int i = 0;
-                    while (i < k && !added) {
-                        if (sap.getLnProbability() > topKList.get(i).getLnProbability()) {
-                            topKList.add(i, sap);
-                            topKList.remove(k.intValue());
-                            added = true;
-                        }
-                        i++;
                     }
                 }
             }
         }
 
-        private void addAll(MySAPList list){
-            ArrayList<SAP> sapList = list.getTopKList();
-            for(SAP sap : sapList) {
-                add(sap);
+        for (int i = 0; i < states.getNumStates(); i++) {
+            for (int h = 0; h < states.getNumStates(); h++) {
+                Double lnTransitionChance = states.lnProbability(h, states.getStateID("END"));
+                Double lnProbability = lnTransitionChance + lnProbabilities[0][h][address.size()];
+                if (lnProbabilities[0][i][address.size() + 1] == null) {
+                    lnProbabilities[0][i][address.size() + 1] = lnProbability;
+                    previousStates[0][i][address.size() + 1] = h;
+                } else if (lnProbabilities[0][i][address.size() + 1] < lnProbability) {
+                    lnProbabilities[0][i][address.size() + 1] = lnProbability;
+                    previousStates[0][i][address.size() + 1] = h;
+
+                }
             }
         }
 
-        private void addAll(ArrayList<SAP> sapList){
-            for(SAP sap : sapList) {
-                add(sap);
+        for (int i = 0; i < states.getNumStates(); i++) {
+            lnProbabilities[0][i][address.size() + 2] = lnProbabilities[0][i][address.size() + 1];
+            previousStates[0][i][address.size() + 2] = states.getStateID("END");
+        }
+
+        for (int i = 0; i < states.getNumStates(); i++) {
+            int j;
+            boolean added;
+            if(topProb.isEmpty()){
+                topProb.add(i);
+            } else if(topProb.size() < k){
+                j = 0;
+                added = false;
+                while(j < k && !added){
+                    if(j >= topProb.size() || lnProbabilities[0][i][address.size() + 1] > lnProbabilities[0][topProb.get(j)][address.size() + 1]){
+                        topProb.add(j, i);
+                        added = true;
+                    }
+                    j++;
+                }
+            } else if(lnProbabilities[0][i][address.size() + 1] > lnProbabilities[0][topProb.get(k - 1)][address.size() + 1]){
+                j = 0;
+                added = false;
+                while(j < k && !added){
+                    if(lnProbabilities[0][i][address.size() + 1] > lnProbabilities[0][topProb.get(j)][address.size() + 1]){
+                        topProb.add(j, i);
+                        topProb.remove(k.intValue());
+                        added = true;
+                    }
+                    j++;
+                }
             }
         }
 
-        public ArrayList<SAP> getTopKList() {
-            return topKList;
+        for(int i = 0; i < topProb.size(); i++){
+            ArrayList<Integer> sequence = new ArrayList<Integer>();
+            Double lnProbability = lnProbabilities[0][topProb.get(i)][address.size() + 2];
+            Integer previousState = previousStates[0][topProb.get(i)][address.size() + 2];
+            sequence.add(0,previousState);
+            previousState = previousStates[0][topProb.get(i)][address.size() + 1];
+            sequence.add(0,previousState);
+            for(int j = address.size(); j > 0; j--) {
+                previousState = previousStates[0][previousState][j];
+                sequence.add(0,previousState);
+            }
+            SAP sap = new SAP(sequence, lnProbability);
+            topK.add(sap);
         }
+
+        logger.info(toString2DArray(lnProbabilities, states.getNumStates(), address.size() + 3));
+        logger.info(toString2DArray(previousStates, states.getNumStates(), address.size() + 3));
+
+        return topK;
+    }
+
+    String toString2DArray(Double lnProbabilities[][][], int m, int n){
+        String output = "";
+
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                output += lnProbabilities[0][i][j] + " ";
+            }
+            output += "\n";
+        }
+
+        return output;
+    }
+
+    String toString2DArray(Integer previousStates[][][], int m, int n){
+        String output = "\n";
+
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                output += previousStates[0][i][j] + " ";
+            }
+            output += "\n";
+        }
+
+        return output;
     }
 }
